@@ -129,6 +129,7 @@ body:has(:is(.markdown-body, #write)) { max-width: none; padding: 0; margin: 0; 
 :is(.markdown-body, #write, body) :is(.hljs-attr, .hljs-variable, .hljs-attribute) { color: #d97757; }  /* CSS variable name --xxx — orange */
 :is(.markdown-body, #write, body) :is(.hljs-selector-pseudo, .hljs-selector-tag, .hljs-selector-id, .hljs-selector-class) { color: #f4a9a9; }  /* selector :root — pink */
 :is(.markdown-body, #write, body) :is(.hljs-comment, .hljs-meta)           { color: #818898; }  /* comment — gray */
+:is(.markdown-body, #write, body) .hljs-section                            { color: var(--text) !important; font-weight: inherit; }  /* markdown headings (## / ###) inside code blocks: restrained body color, not VS Code's default orange */
 
 /* Task-list checkbox: unchecked #3B3B3B / checked #757575 (matches screenshot 2) */
 :is(.markdown-body, #write, body) li > input[type="checkbox"] {
@@ -149,6 +150,8 @@ body:has(:is(.markdown-body, #write)) { max-width: none; padding: 0; margin: 0; 
 /* ================= Typora-specific patches (same file; these .cm-* / .md-fences don't exist in VS Code / web, so no effect there) ================= */
 /* CodeMirror container transparent, letting the .md-fences background (from the pre rule above) show through */
 #write .md-fences :is(.CodeMirror, .CodeMirror-scroll, .CodeMirror-sizer, .CodeMirror-gutters, .CodeMirror-lines) { background: transparent !important; }
+/* CodeMirror renders every line as a <pre class="CodeMirror-line">, which the global `pre` rule above would box individually (border + radius + padding) → each line became its own box in Typora. Reset all <pre> inside CodeMirror so only the outer .md-fences keeps the frame. */
+#write .CodeMirror pre { border: 0 !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
 #write .md-fences .CodeMirror-cursor { border-left-color: var(--accent) !important; }
 /* CodeMirror syntax highlighting: same palette as hljs above, matching claude.ai measurements */
 #write .cm-keyword                          { color: #cc7bf4 !important; }  /* def/return — purple */
@@ -159,5 +162,6 @@ body:has(:is(.markdown-body, #write)) { max-width: none; padding: 0; margin: 0; 
 #write .cm-tag                              { color: #f4a9a9 !important; }  /* :root selector — pink */
 #write :is(.cm-comment, .cm-meta)           { color: #818898 !important; }  /* comment — gray */
 #write :is(.cm-operator, .cm-variable, .cm-property, .cm-bracket) { color: var(--text) !important; }  /* everything else takes the body color */
+#write :is(.cm-header, .cm-header-1, .cm-header-2, .cm-header-3, .cm-header-4, .cm-header-5, .cm-header-6) { color: var(--text) !important; font-weight: normal !important; }  /* markdown headings (## / ###) inside code blocks: restrained body color, not CodeMirror's default blue */
 /* Hide YAML front matter: Typora renders it as a meta block by default; VS Code is handled by markdown.preview.frontMatter:hide */
 #write pre.md-meta-block { display: none; }
