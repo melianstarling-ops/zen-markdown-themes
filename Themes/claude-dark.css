@@ -9,6 +9,7 @@
    ◆ Originality & credits: this is original CSS "rewritten from scratch to match claude.ai" (~160 lines, 0 lines of Typora UI code);
      inspiration credited to the Typora community Claude theme https://theme.typora.io/theme/Claude/ .
    ◆ Code-block highlighting ships two sets in one file: VS Code uses .hljs-*, Typora uses .cm-*; each environment picks its own, no interference.
+   ◆ Version: v0.1 (first public release).
    ============================================================ */
 
 :root {

@@ -9,14 +9,14 @@
        Body and headings both use regular weight (HIG: don't use Light/Thin for body; the old dark thin-weight compensation was removed per review).
      · Fallbacks: Latin Segoe UI, CJK Microsoft YaHei, code Consolas.
 
-   ◆ Design basis (see 01_Tokens/Apple-HIG-Reference.md):
+   ◆ Design basis (Apple Human Interface Guidelines — Typography; source link below):
      · Size scale = macOS built-in text styles (Large Title 26 / Title1 22 / Title2 17 / Title3 15 / Headline 13 / Subheadline 11 pt) mapped to h1–h6; body baseline scaled up to 17px.
      · Letter-spacing = Latin reference only; -0.43px@17pt is actually an iOS value (macOS Body is 13pt). Container and all heading levels force letter-spacing:normal for CJK (SF tracking is designed for Latin only; negative tracking cramps PingFang).
      · Heading weight Semibold (apple.com web practice).
      · Colors = neutral grayscale (soft deep black #1a1a1a + near-white #e8e8e8); body uses #e8e8e8 rather than pure white per APCA to prevent halation (not an Apple rule; Apple's dark primary label is actually pure white).
      · Line length ≈42rem (close to Apple readableContentGuide ~87-char cap); body left-aligned (Apple convention, ragged-right) + pure-CSS typography enhancements.
 
-   ◆ Version: v2.13 (iterated per a web-side Apple-rules review: body left-aligned, CJK tracking zeroed, Light weight removed, line length cut to 42rem, radius tokenized, h4 moved to Text, th/td 16px). Prior v2.12: fluid horizontal margins + vertical 8pt layered rhythm. Baseline promoted from 02_Workshop/Drafts/v2-dark-mono.css (v2.11).
+   ◆ Version: v0.1 (first public release) — neutral grayscale; left-aligned body (ragged-right); CJK tracking zeroed; line length 42rem; tokenized corner radius; type scale mapped to macOS built-in text styles.
    Source: developer.apple.com/design/human-interface-guidelines/typography
    ============================================================ */
 
