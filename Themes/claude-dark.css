@@ -1,0 +1,162 @@
+/* ============================================================
+   claude-dark.css — Claude-style Markdown theme (dark)
+   Dual container :is(.markdown-body, #write, body): one stylesheet fits VS Code / Typora / web at once.
+   All fonts are free & redistributable: Latin Inter, CJK Noto Sans SC (close to PingFang), mono JetBrains Mono.
+
+   ◆ Colors: calibrated against claude.ai dark mode as measured (bg #191A1B, accent #d97757, near-white text #F9F9F7;
+     blockquote / inline code / code-block highlighting all calibrated to claude.ai measurements). Brand color from the
+     Anthropic brand guidelines (github.com/anthropics/skills, Apache-2.0).
+   ◆ Originality & credits: this is original CSS "rewritten from scratch to match claude.ai" (~160 lines, 0 lines of Typora UI code);
+     inspiration credited to the Typora community Claude theme https://theme.typora.io/theme/Claude/ .
+   ◆ Code-block highlighting ships two sets in one file: VS Code uses .hljs-*, Typora uses .cm-*; each environment picks its own, no interference.
+   ============================================================ */
+
+:root {
+  --bg:        #191A1B;
+  --text:      #F9F9F7;
+  --heading:   #F9F9F7;
+  --accent:    #D97757;
+  --border:    #dedcd14d;
+  --quote-bg:     #333330;   /* blockquote fill: unified with inline-quote background (user-calibrated) */
+  --quote-border: #3F3E3C;   /* blockquote left border: dark gray (user-calibrated) */
+  --quote-text:   #C3C2B7;   /* blockquote text (muted, user-calibrated) */
+  --code-bg:          #30302e;
+  --inline-code-bg:   #2e2c28;
+  --inline-code-text: #f4a9a9;   /* inline code: user-calibrated pink-coral (matches inline code in claude.ai body text) */
+
+  /* All-free font stack: Latin Inter → system; CJK Noto Sans SC (close to PingFang) */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Consolas, "Sarasa Mono SC", monospace;
+}
+
+body { background: var(--bg); color: var(--text); }
+
+/* VS Code native preview content mounts directly on body (no .markdown-body/#write wrapper), so the container rules above also apply to body.
+   For live-preview (.markdown-body) / Typora (#write), body is the outer window: when an inner container exists, hand layout padding to the inner
+   container and reset body to avoid doubling. Holds for both cases of "does VS Code have an inner container" (robust). */
+body:has(:is(.markdown-body, #write)) { max-width: none; padding: 0; margin: 0; }
+
+/* Selection background: unified across all three (VS Code / Typora / browser), does not obscure text */
+::selection      { background: #565655; }
+::-moz-selection { background: #565655; }
+#write ::selection { background: #565655; }   /* Typora fallback */
+
+:is(.markdown-body, #write, body) {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 760px;                              /* line-length cap: keeps characters-per-line in check when full-screen */
+  margin: 0 auto;                                /* center */
+  padding: 40px clamp(12px, 2.5vw, 48px) 96px;   /* horizontal padding adapts to window; halved on narrow windows (min 12px), tightens further only when very narrow */
+  -webkit-font-smoothing: antialiased;
+}
+
+:is(.markdown-body, #write, body) :is(p, ul, ol, blockquote, pre, table) { margin: 0 0 24px; }
+:is(.markdown-body, #write, body) li { margin: 0 0 6px; }
+:is(.markdown-body, #write, body) li > :is(ul, ol) { margin: 6px 0 0; }
+
+:is(.markdown-body, #write, body) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-sans);
+  color: var(--heading);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 32px 0 12px;
+}
+:is(.markdown-body, #write, body) h1 { font-size: 1.75em; margin-top: 8px; }
+:is(.markdown-body, #write, body) h2 { font-size: 1.45em; }
+:is(.markdown-body, #write, body) h3 { font-size: 1.2em; }
+:is(.markdown-body, #write, body) :is(h4, h5, h6) { font-size: 1.05em; }
+
+:is(.markdown-body, #write, body) :is(strong, b) { font-weight: 600; color: inherit; }
+
+:is(.markdown-body, #write, body) blockquote {
+  font-family: inherit;            /* blockquote font matches body */
+  font-weight: inherit;            /* weight matches body (avoid looking thin) */
+  /* Explicit fixed faint background: reproduces the VS Code default look you liked, and keeps Typora/web consistent
+     (the original gray block was VS Code's --vscode-textBlockQuote-background showing through, not portable, so lock it explicitly).
+     For a fully background-less look, delete the background line below or set it to transparent. */
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 2px solid var(--quote-border);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: var(--quote-text);
+}
+:is(.markdown-body, #write, body) blockquote > :first-child { margin-top: 0; }
+:is(.markdown-body, #write, body) blockquote > :last-child  { margin-bottom: 0; }
+
+:is(.markdown-body, #write, body) :not(pre) > code {
+  font-family: var(--font-mono);
+  background: var(--inline-code-bg);
+  color: var(--inline-code-text);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 0.35em;
+  font-size: 0.9em;
+}
+
+:is(.markdown-body, #write, body) :is(pre, .md-fences) {
+  background: var(--code-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  line-height: 1.6;
+  overflow: auto;
+}
+:is(.markdown-body, #write, body) pre > code { background: none; border: 0; padding: 0; color: var(--text); font-size: inherit; }
+
+:is(.markdown-body, #write, body) a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--border); }
+:is(.markdown-body, #write, body) a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+:is(.markdown-body, #write, body) table { border-collapse: collapse; display: block; width: max-content; max-width: 100%; overflow-x: auto; }  /* horizontal scroll when many columns, so it doesn't blow out the window */
+:is(.markdown-body, #write, body) :is(th, td) { border: none; border-bottom: 0.5px solid var(--border); padding: 0.5rem 1rem 0.5rem 0; text-align: left; }
+:is(.markdown-body, #write, body) th { font-weight: 600; }
+
+:is(.markdown-body, #write, body) hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+:is(.markdown-body, #write, body) img { max-width: 100%; border-radius: 8px; }
+
+/* Code-block syntax highlighting: matches claude.ai web (screenshot 4).
+   ⚠️ VS Code uses highlight.js (.hljs-* classes); live-preview has no highlight engine → code blocks there are single-color plain text, highlighting only visible in VS Code preview/export. */
+/* Colors per claude.ai measurement (screenshot 3), not the template description: the key point is hex values/numbers are green */
+:is(.markdown-body, #write, body) .hljs-keyword                            { color: #cc7bf4; }  /* def/return/import — purple */
+:is(.markdown-body, #write, body) :is(.hljs-title, .hljs-title.function_, .hljs-built_in, .hljs-type, .hljs-class) { color: #6a9bcc; }  /* function name / type — blue */
+:is(.markdown-body, #write, body) :is(.hljs-string, .hljs-meta .hljs-string) { color: #9be963; }  /* string — green */
+:is(.markdown-body, #write, body) :is(.hljs-number, .hljs-literal)         { color: #9be963; }  /* number / hex value — green (claude.ai measured; was blue) */
+:is(.markdown-body, #write, body) :is(.hljs-attr, .hljs-variable, .hljs-attribute) { color: #d97757; }  /* CSS variable name --xxx — orange */
+:is(.markdown-body, #write, body) :is(.hljs-selector-pseudo, .hljs-selector-tag, .hljs-selector-id, .hljs-selector-class) { color: #f4a9a9; }  /* selector :root — pink */
+:is(.markdown-body, #write, body) :is(.hljs-comment, .hljs-meta)           { color: #818898; }  /* comment — gray */
+
+/* Task-list checkbox: unchecked #3B3B3B / checked #757575 (matches screenshot 2) */
+:is(.markdown-body, #write, body) li > input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 13px; margin: 0 0.5em 0 -1.3em;
+  vertical-align: middle; position: relative; cursor: pointer;
+  border: 1px solid #3B3B3B; background: #3B3B3B; border-radius: 3px;
+}
+:is(.markdown-body, #write, body) li > input[type="checkbox"]:checked {
+  background: #757575; border-color: #757575;
+}
+:is(.markdown-body, #write, body) li > input[type="checkbox"]:checked::after {
+  content: ""; position: absolute; left: 4px; top: 1px;
+  width: 3px; height: 7px; border: solid #191A1B; border-width: 0 2px 2px 0;  /* checkmark uses the background color (dark), not white */
+  transform: rotate(45deg);
+}
+
+/* ================= Typora-specific patches (same file; these .cm-* / .md-fences don't exist in VS Code / web, so no effect there) ================= */
+/* CodeMirror container transparent, letting the .md-fences background (from the pre rule above) show through */
+#write .md-fences :is(.CodeMirror, .CodeMirror-scroll, .CodeMirror-sizer, .CodeMirror-gutters, .CodeMirror-lines) { background: transparent !important; }
+#write .md-fences .CodeMirror-cursor { border-left-color: var(--accent) !important; }
+/* CodeMirror syntax highlighting: same palette as hljs above, matching claude.ai measurements */
+#write .cm-keyword                          { color: #cc7bf4 !important; }  /* def/return — purple */
+#write :is(.cm-def, .cm-builtin)            { color: #6a9bcc !important; }  /* function / type — blue */
+#write :is(.cm-string, .cm-string-2)        { color: #9be963 !important; }  /* string — green */
+#write :is(.cm-number, .cm-atom)            { color: #9be963 !important; }  /* number / hex — green */
+#write :is(.cm-variable-2, .cm-variable-3)  { color: #d97757 !important; }  /* CSS variable --xxx — orange */
+#write .cm-tag                              { color: #f4a9a9 !important; }  /* :root selector — pink */
+#write :is(.cm-comment, .cm-meta)           { color: #818898 !important; }  /* comment — gray */
+#write :is(.cm-operator, .cm-variable, .cm-property, .cm-bracket) { color: var(--text) !important; }  /* everything else takes the body color */
+/* Hide YAML front matter: Typora renders it as a meta block by default; VS Code is handled by markdown.preview.frontMatter:hide */
+#write pre.md-meta-block { display: none; }

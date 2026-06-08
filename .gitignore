@@ -1,0 +1,32 @@
+# ============================================================================
+# zen-markdown-themes .gitignore
+#
+# Principle: ship the products, keep process material private.
+# Polished CSS themes, docs, and the preview tool are public, in git.
+# Reference material, design notes, drafts, and handoffs are private: kept out
+# of version control and synced across machines via cloud storage.
+# ============================================================================
+
+# --- Private process material (references / notes / drafts / handoffs; never published) ---
+02_Workshop/
+
+# --- Internal dev process (kept local only, not published to GitHub) ---
+# Task log, agent behavior charter, SOPs/templates, typography-source archive:
+# dev-support material, not end-user products.
+TODO.md
+AGENTS.md
+00_System/
+01_Tokens/
+
+# --- Local settings ---
+.claude/
+.vscode/settings.local.json
+
+# --- System noise ---
+.DS_Store
+Thumbs.db
+
+# --- If Playground/Scripts later pull in a Node toolchain ---
+node_modules/
+dist/
+*.log

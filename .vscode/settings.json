@@ -1,0 +1,6 @@
+{
+  "markdown.styles": [
+    // Current: Claude Dark. To switch to Apple, change this to "Themes/apple-dark-mono.css".
+    "Themes/claude-dark.css"
+  ]
+}

@@ -1,0 +1,138 @@
+/* ============================================================
+   Apple Dark Mono  —  pure neutral-grayscale dark / Apple-style Markdown theme
+   For: VS Code native Markdown preview (.markdown-body) / Typora (#write) / direct web use.
+   Selectors use the :is(.markdown-body, #write) dual container (needs Chromium 88+; both VS Code/Typora qualify).
+
+   ◆ Font dependencies (install locally; falls back to system fonts if missing):
+     · Latin: Inter (close to SF Pro)          https://fonts.google.com/specimen/Inter
+     · CJK:   Noto Sans SC (close to PingFang)  https://fonts.google.com/noto/specimen/Noto+Sans+SC
+       Body and headings both use regular weight (HIG: don't use Light/Thin for body; the old dark thin-weight compensation was removed per review).
+     · Fallbacks: Latin Segoe UI, CJK Microsoft YaHei, code Consolas.
+
+   ◆ Design basis (see 01_Tokens/Apple-HIG-Reference.md):
+     · Size scale = macOS built-in text styles (Large Title 26 / Title1 22 / Title2 17 / Title3 15 / Headline 13 / Subheadline 11 pt) mapped to h1–h6; body baseline scaled up to 17px.
+     · Letter-spacing = Latin reference only; -0.43px@17pt is actually an iOS value (macOS Body is 13pt). Container and all heading levels force letter-spacing:normal for CJK (SF tracking is designed for Latin only; negative tracking cramps PingFang).
+     · Heading weight Semibold (apple.com web practice).
+     · Colors = neutral grayscale (soft deep black #1a1a1a + near-white #e8e8e8); body uses #e8e8e8 rather than pure white per APCA to prevent halation (not an Apple rule; Apple's dark primary label is actually pure white).
+     · Line length ≈42rem (close to Apple readableContentGuide ~87-char cap); body left-aligned (Apple convention, ragged-right) + pure-CSS typography enhancements.
+
+   ◆ Version: v2.13 (iterated per a web-side Apple-rules review: body left-aligned, CJK tracking zeroed, Light weight removed, line length cut to 42rem, radius tokenized, h4 moved to Text, th/td 16px). Prior v2.12: fluid horizontal margins + vertical 8pt layered rhythm. Baseline promoted from 02_Workshop/Drafts/v2-dark-mono.css (v2.11).
+   Source: developer.apple.com/design/human-interface-guidelines/typography
+   ============================================================ */
+
+:root {
+  /* Font stack (Apple fonts → Latin fallback → CJK → generic); Latin fallback placed before CJK so English isn't hijacked by CJK fonts' Latin glyphs */
+  --font-text:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter",
+                  "Segoe UI", Helvetica, Arial,
+                  "PingFang SC", "Noto Sans SC", "Source Han Sans SC",
+                  "Microsoft YaHei", sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+                  "Segoe UI", Helvetica, Arial,
+                  "PingFang SC", "Noto Sans SC", "Source Han Sans SC",
+                  "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Dark Mono colors: neutral gray, zero hue */
+  --ink:   #e8e8e8;   /* body: near-white */
+  --ink-2: #9a9a9a;   /* secondary text: mid-gray */
+  --line:  #3a3a3a;   /* divider / border */
+  --bg:    #1a1a1a;   /* background: neutral deep black */
+  --code-bg: #2a2a2a; /* code block / blockquote / table header: one notch lighter than the body background */
+
+  /* Radius tokens (Apple's preference for consistent continuous corners): small for inline, large for block */
+  --r-inline: 6px;
+  --r-block: 12px;
+}
+
+/* ---------- Whole-window background + base font (Typora window / web body) ---------- */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+}
+
+/* ---------- Content container: VS Code .markdown-body / Typora #write ---------- */
+:is(.markdown-body, #write) {
+  font-family: var(--font-text) !important;
+  font-size: 17px;             /* macOS Body 13pt scaled up to 17px (comfortable web-reading value, custom) */
+  line-height: 1.6;            /* macOS Body=1.23; loosened for CJK, custom */
+  letter-spacing: normal;      /* CJK-safe: negative tracking cramps PingFang; MD preview can't split Latin by lang, so zeroed globally */
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  max-width: 42rem;            /* ≈672–700px: close to Apple readableContentGuide (~87-char cap); avoid ch (distorts for CJK) */
+  margin: 0 auto;
+  /* Fluid horizontal margins: narrows to 16px on narrow windows (text ratio recovers), 32px on wide windows, keeping the padding ratio constant across viewports.
+     Top/bottom stay fixed. CJK mixed text doesn't use ch for line length (ch = width of "0", CJK ≈ 2x, inaccurate), so line length is still governed by max-width. */
+  padding: 48px clamp(16px, 5vw, 32px) 96px;
+}
+
+/* ---------- Paragraphs / lists: left-aligned + pure-CSS typography enhancements ---------- */
+:is(.markdown-body, #write) p,
+:is(.markdown-body, #write) li {
+  text-align: left;            /* Apple convention: body left-aligned, ragged-right (decision: changed from justify to left) */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
+  text-wrap: pretty;
+  text-autospace: normal;      /* CJK/Latin mixed text: automatic thin gap between CJK and Latin */
+  text-spacing-trim: normal;
+}
+/* Vertical rhythm: inner ≤ outer (Gestalt proximity) + 8pt/4pt grid layering → creates breathing room.
+   Tight to loose: line-height 1.6 < list item 12px < paragraph 20px < list block 24px. */
+:is(.markdown-body, #write) p { margin: 20px 0; }                 /* paragraph: independent unit of thought */
+:is(.markdown-body, #write) li { margin: 12px 0; }                /* list item: same group, tighter than paragraph */
+:is(.markdown-body, #write) :is(ul, ol) { margin: 24px 0; }       /* list block ↔ surrounding body: loosest, between groups */
+:is(.markdown-body, #write) li > :is(ul, ol) { margin: 12px 0; }  /* nested sublist: close to its parent item, not 24px */
+
+/* ---------- Headings: mapped to macOS built-in text styles ---------- */
+:is(.markdown-body, #write) :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--ink);
+  font-weight: 600;            /* Semibold (apple.com web practice) */
+  text-align: left;
+  text-wrap: balance;
+}
+:is(.markdown-body, #write) :is(h1, h2, h3)     { font-family: var(--font-display); }  /* ≥20px SF Display */
+:is(.markdown-body, #write) :is(h4, h5, h6)     { font-family: var(--font-text); }     /* <20px SF Text (h4≈19.6px, split using Text) */
+:is(.markdown-body, #write) h1 { font-size: 2.0em;  line-height: 1.23; letter-spacing: 0;        margin: 1.5em 0 0.5em; }  /* macOS Large Title 26/32 */
+:is(.markdown-body, #write) h2 { font-size: 1.69em; line-height: 1.18; letter-spacing: 0;        margin: 1.6em 0 0.5em; }  /* macOS Title 1 22/26 */
+:is(.markdown-body, #write) h3 { font-size: 1.31em; line-height: 1.29; letter-spacing: normal;   margin: 1.5em 0 0.4em; }  /* macOS Title 2 17/22; CJK tracking zeroed */
+:is(.markdown-body, #write) h4 { font-size: 1.15em; line-height: 1.33; letter-spacing: normal;   margin: 1.4em 0 0.3em; }  /* macOS Title 3 15/20; CJK tracking zeroed */
+:is(.markdown-body, #write) h5 { font-size: 1.0em;  line-height: 1.23; letter-spacing: normal;   margin: 1.4em 0 0.3em; }  /* macOS Headline 13/16; CJK tracking zeroed */
+:is(.markdown-body, #write) h6 { font-size: 0.85em; line-height: 1.27; letter-spacing: normal;   margin: 1.4em 0 0.3em; color: var(--ink-2); }  /* macOS Subheadline 11/14; CJK tracking zeroed */
+
+/* ---------- Blockquote: lighter background block on the dark base for emphasis; text same color as body (owner feedback: gray text too dark, unified) ---------- */
+:is(.markdown-body, #write) blockquote {
+  border-left: 3px solid var(--line);
+  background: var(--code-bg);
+  color: var(--ink);
+  margin: 1.4em 0;
+  padding: 0.8em 1.2em;
+  border-radius: 0 var(--r-block) var(--r-block) 0;
+}
+
+/* ---------- Code / tables ---------- */
+:is(.markdown-body, #write) code {
+  font-family: var(--font-mono);
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: var(--r-inline);
+  font-size: 0.9em;
+}
+:is(.markdown-body, #write) pre {
+  background: var(--code-bg);
+  border: none;
+  border-radius: var(--r-block);
+  padding: 16px 18px;
+  line-height: 1.5;
+}
+:is(.markdown-body, #write) pre code { background: none; padding: 0; }
+
+:is(.markdown-body, #write) table { border-collapse: collapse; margin: 1.4em 0; }
+:is(.markdown-body, #write) :is(th, td) { border: 1px solid var(--line); padding: 8px 16px; text-align: left; }
+:is(.markdown-body, #write) th { background: var(--code-bg); font-weight: 600; }
+
+:is(.markdown-body, #write) a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #666; }
+:is(.markdown-body, #write) hr { border: none; border-top: 1px solid var(--line); margin: 2.4em 0; }
+:is(.markdown-body, #write) img { max-width: 100%; border-radius: var(--r-block); }

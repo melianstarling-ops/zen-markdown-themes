@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Preview · Zen Markdown Themes</title>
+<style>
+  html, body { height: 100%; margin: 0; color-scheme: dark; }
+  body {
+    display: flex; flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0d0d0d; color: #e8e8e8;
+  }
+  /* ---- Top control bar (fully isolated from the injected theme; the theme only applies inside the iframe) ---- */
+  /* Whole page dark: chrome uses near-black grayscale + a translucent blur to keep an Apple feel. These color values are the preview tool's own, not theme parameters. */
+  .topbar {
+    flex: 0 0 auto;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px;
+    background: rgba(28,28,30,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .topbar .title { font-weight: 600; font-size: 14px; margin-right: 6px; white-space: nowrap; }
+  .topbar button {
+    font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 8px;
+    border: 1px solid #3a3a3a; background: #2a2a2a; color: #ddd; cursor: pointer; transition: all .15s;
+  }
+  .topbar button:hover { border-color: #555; background: #333; }
+  .topbar button.active { background: #e8e8e8; color: #1a1a1a; border-color: #e8e8e8; }
+  .topbar #path {
+    font: inherit; font-size: 12px; padding: 5px 10px; border-radius: 8px;
+    border: 1px solid #3a3a3a; min-width: 320px; flex: 1 1 320px;
+    background: #1c1c1e; color: #ddd;
+  }
+  .topbar label { font-size: 12px; color: #aaa; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .topbar #status { font-size: 12px; color: #888; margin-left: auto; white-space: nowrap; }
+  .topbar #status.err { color: #ff5c5c; }
+  /* ---- Preview stage (dark, close to the dark themes' base, so the theme's side margins don't reveal a white edge) ---- */
+  #stage { flex: 1 1 auto; width: 100%; border: none; background: #1a1a1a; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="title">Live Preview</span>
+    <span id="quick"></span>
+    <input id="path" type="text" spellcheck="false" title="CSS path currently previewed (relative to this file; edit and press Enter)">
+    <label><input type="checkbox" id="auto"> Auto-refresh</label>
+    <button id="refresh" title="Reload the CSS now">Reload</button>
+    <span id="status">Ready</span>
+  </div>
+
+  <iframe id="stage" title="Preview"></iframe>
+
+  <!-- Sample content: a self-contained showcase of every Markdown element, mostly English with some Chinese and mixed CJK/Latin to exercise the themes' script handling. -->
+  <script id="sample" type="text/html">
+    <h1>Claude-style Markdown — Content Template</h1>
+    <p>This is a <strong>self-demonstrating</strong> document: it is both sample content for checking a theme and a per-section note on how each element is meant to look in the Claude style. Drop it into a VS Code preview or Typora and tweak the CSS side by side.</p>
+    <blockquote>
+      <p><strong>Sourcing note (important)</strong><br>
+      Anything marked <code>[Official]</code> comes from Anthropic's official brand-guidelines skill (github.com/anthropics/skills, Apache-2.0).<br>
+      Anything marked <code>[Unofficial]</code> is <strong>not</strong> specified by Anthropic — it is a reasonable suggestion for reproducing the look.</p>
+    </blockquote>
+    <hr>
+    <h2>1 · Design tokens at a glance</h2>
+    <p>The table below is entirely <code>[Official]</code> — the color foundation of the whole theme.</p>
+    <table>
+      <thead><tr><th>Token</th><th>Hex</th><th>Official use</th></tr></thead>
+      <tbody>
+        <tr><td>Dark</td><td><code>#141413</code></td><td>Body text / dark background</td></tr>
+        <tr><td>Light</td><td><code>#faf9f5</code></td><td>Light background / text on dark</td></tr>
+        <tr><td>Mid Gray</td><td><code>#b0aea5</code></td><td>Secondary elements, supporting text</td></tr>
+        <tr><td>Light Gray</td><td><code>#e8e6dc</code></td><td>Subtle backgrounds, dividers</td></tr>
+        <tr><td>Orange</td><td><code>#d97757</code></td><td>Primary accent (emphasis, links)</td></tr>
+        <tr><td>Blue</td><td><code>#6a9bcc</code></td><td>Secondary accent</td></tr>
+        <tr><td>Green</td><td><code>#788c5d</code></td><td>Tertiary accent</td></tr>
+      </tbody>
+    </table>
+    <blockquote>
+      <p><strong>About the fonts</strong> — Three things often get conflated. Anthropic's official brand-guidelines skill specifies <strong>Poppins / Lora</strong> (Google Fonts, free and redistributable). The real claude.ai UI uses custom <strong>Anthropic Sans / Serif</strong> (proprietary, not free). <strong>This theme ships neither</strong> — it uses free <strong>Inter + Noto Sans SC + JetBrains Mono</strong> for broad availability across machines.</p>
+    </blockquote>
+    <hr>
+    <h2>2 · Heading hierarchy</h2>
+    <h3>This is an H3: section heading</h3>
+    <h4>This is an H4: subsection</h4>
+    <p>这一段用中文，演示主题对中文标题与正文的渲染效果。Heading sizes and spacing are <strong>not</strong> specified by Anthropic <code>[Unofficial]</code> — a restrained reference ladder: H1 ≈ 2em, H2 ≈ 1.5em, H3 ≈ 1.25em, H4 ≈ 1.1em, with line height tightening as size grows and more space above a heading than below it to create breathing room.</p>
+    <blockquote>
+      <p><strong>Design note</strong> — Don't paint every heading in accent orange. The Claude character is restraint: keep headings in neutral Dark/Light and save orange for the few things that truly need emphasis (links, key accents). Overusing orange loses the calm, trustworthy feel.</p>
+    </blockquote>
+    <hr>
+    <h2>3 · Body & inline elements</h2>
+    <p>A standard paragraph mixes in these inline elements: <strong>bold emphasis</strong>, <em>italics</em>, <code>inline code</code>, and <a href="https://github.com/anthropics/skills">a link to an official resource</a>.</p>
+    <p>这是一段中英混排的正文：当 CJK 与 Latin 字符相邻时，<code>text-autospace</code> 会自动插入细微间隙，让「中文 English 中文」之间不至于挤在一起。Inline code like <code>const x = 1</code> gets a pill background and a monospace stack <code>[Unofficial]</code> so it stands out without shouting.</p>
+    <blockquote>
+      <p><strong>Design note</strong> — Line height and tracking <code>[Unofficial]</code>: around 1.6–1.7 for Latin body; CJK wants a touch looser than Latin. Never use negative tracking on CJK — keep it <code>normal</code>.</p>
+    </blockquote>
+    <hr>
+    <h2>4 · Lists</h2>
+    <p>Unordered list (parallel points):</p>
+    <ul>
+      <li>First: the Claude style favors whitespace and low visual density</li>
+      <li>Second: space between list items, but tighter than between paragraphs (proximity)</li>
+      <li>Third: bullet color can be Mid Gray — it needn't grab attention</li>
+    </ul>
+    <p>有序列表（适合步骤）：</p>
+    <ol>
+      <li>Define the CSS variables (use the official token table above)</li>
+      <li>Apply them to headings, body, and inline elements</li>
+      <li>Fine-tune element by element against this sample</li>
+    </ol>
+    <p>Nested list (children sit close to their parent):</p>
+    <ul>
+      <li>Theme design
+        <ul><li>Color <code>[Official]</code></li><li>Fonts <code>[Official]</code></li><li>Spacing &amp; radius <code>[Unofficial]</code></li></ul>
+      </li>
+      <li>Verification
+        <ul><li>VS Code native preview</li><li>Typora</li></ul>
+      </li>
+    </ul>
+    <hr>
+    <h2>5 · Blockquote</h2>
+    <blockquote>
+      <p>A blockquote suits design notes, key takeaways, or quoted text. The Claude temperament — quiet, restrained, never competing with the content itself — fits an aside like this well.</p>
+      <p>A blockquote can have multiple paragraphs.</p>
+    </blockquote>
+    <p>Blockquote styling <code>[Unofficial]</code>: a common approach is a left rule plus a slightly raised background.</p>
+    <hr>
+    <h2>6 · Code block</h2>
+    <pre><code>:root {
+  /* —— all colors from Anthropic's official brand guidelines —— */
+  --c-dark:   #141413;  /* body / dark background */
+  --c-light:  #faf9f5;  /* light background / text on dark */
+  --c-orange: #d97757;  /* primary accent */
+  --font-head: "Poppins", "PingFang SC", Arial, sans-serif;
+  --font-body: "Lora", "Songti SC", Georgia, serif;
+}</code></pre>
+    <pre><code>def greet(name: str) -&gt; str:
+    return f"Hello, {name}"</code></pre>
+    <blockquote>
+      <p><strong>Design note</strong> — Code-block styling <code>[Unofficial]</code>: give block code its own background, a medium radius, and an optional language label. Keep highlight colors restrained — not the high-saturation look of an IDE.</p>
+    </blockquote>
+    <hr>
+    <h2>7 · Table</h2>
+    <table>
+      <thead><tr><th>Element</th><th>Basis</th><th>Accent use</th></tr></thead>
+      <tbody>
+        <tr><td>Heading</td><td>Poppins <code>[Official]</code></td><td>No accent</td></tr>
+        <tr><td>Body</td><td>Lora <code>[Official]</code></td><td>No accent</td></tr>
+        <tr><td>Link</td><td>——</td><td>Orange <code>#d97757</code></td></tr>
+        <tr><td>Quote rule</td><td><code>[Unofficial]</code></td><td>Orange or neutral gray</td></tr>
+      </tbody>
+    </table>
+    <hr>
+    <h2>8 · Other details</h2>
+    <p>Link styling <code>[Unofficial]</code>: use accent orange <code>#d97757</code>. Below is an <code>&lt;hr&gt;</code> divider:</p>
+    <hr>
+    <blockquote>
+      <p><strong>Last word</strong> — 整套主题的灵魂不在某个 hex 值，而在「克制」：lots of whitespace, low saturation, and accent orange used only where it counts. When in doubt, use less color rather than letting the document feel noisy.</p>
+    </blockquote>
+  </script>
+
+  <script>
+    // Quick-switch buttons: themes relative to this file. Default loads QUICK[0].
+    const QUICK = [
+      ['Claude Dark', '../Themes/claude-dark.css'],
+      ['Apple Dark Mono', '../Themes/apple-dark-mono.css'],
+    ];
+
+    const SAMPLE    = document.getElementById('sample').innerHTML;
+    const iframe    = document.getElementById('stage');
+    const pathInput = document.getElementById('path');
+    const autoChk   = document.getElementById('auto');
+    const statusEl  = document.getElementById('status');
+    const quickBox  = document.getElementById('quick');
+
+    let cssPath = QUICK[0][1];
+
+    // Add a timestamp to the path to bypass the cache and load the latest CSS from disk.
+    function stamp(p) { return p + (p.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(); }
+
+    // iframe document: base content + a hot-swappable theme link (isolates the theme's body rules).
+    function frameDoc(href) {
+      return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+           + '<link id="theme" rel="stylesheet" href="' + href + '">'
+           + '</head><body><div class="markdown-body">' + SAMPLE + '</div></body></html>';
+    }
+
+    function initFrame() { iframe.srcdoc = frameDoc(stamp(cssPath)); }
+
+    function reloadCSS() {
+      const doc  = iframe.contentDocument;
+      const link = doc && doc.getElementById('theme');
+      if (link) link.href = stamp(cssPath);   // swap only the CSS, keep the content and scroll position
+      else initFrame();                        // rebuild if the iframe isn't ready yet
+      setStatus(false);
+    }
+
+    function setStatus(isErr) {
+      statusEl.className = isErr ? 'err' : '';
+      statusEl.textContent = isErr
+        ? 'Load failed: check path ' + cssPath
+        : 'Auto-refresh ' + (autoChk.checked ? 'on' : 'off') + ' · last ' + new Date().toLocaleTimeString();
+    }
+
+    function highlight() {
+      [...quickBox.children].forEach(b => b.classList.toggle('active', b.dataset.path === cssPath));
+    }
+
+    function setPath(p) {
+      cssPath = p;
+      pathInput.value = p;
+      highlight();
+      reloadCSS();
+    }
+
+    // Build the quick-switch buttons.
+    QUICK.forEach(([label, path]) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      b.dataset.path = path;
+      b.addEventListener('click', () => setPath(path));
+      quickBox.appendChild(b);
+    });
+
+    // Manual path edit (Enter / blur).
+    pathInput.addEventListener('change', () => setPath(pathInput.value.trim()));
+    // Manual reload.
+    document.getElementById('refresh').addEventListener('click', reloadCSS);
+    // Auto-poll (once per second): saving the CSS reflects within ~1s.
+    setInterval(() => { if (autoChk.checked) reloadCSS(); }, 1000);
+
+    // Init.
+    pathInput.value = cssPath;
+    highlight();
+    initFrame();
+    setStatus(false);
+  </script>
+</body>
+</html>
