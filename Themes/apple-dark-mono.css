@@ -120,7 +120,7 @@ body {
   border-radius: var(--r-inline);
   font-size: 0.9em;
 }
-:is(.markdown-body, #write) pre {
+:is(.markdown-body, #write) :is(pre, .md-fences) {
   background: var(--code-bg);
   border: none;
   border-radius: var(--r-block);
@@ -136,3 +136,20 @@ body {
 :is(.markdown-body, #write) a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #666; }
 :is(.markdown-body, #write) hr { border: none; border-top: 1px solid var(--line); margin: 2.4em 0; }
 :is(.markdown-body, #write) img { max-width: 100%; border-radius: var(--r-block); }
+
+/* ---------- Code syntax: monochrome (Apple grayscale constraint, §C.1) ---------- */
+/* No syntax colors. VS Code (hljs) would otherwise inherit a colorful default theme and Typora (CodeMirror) has its own; both are flattened to grayscale here — body ink for tokens, dimmer ink-2 for comments. */
+:is(.markdown-body, #write, body) :is(.hljs-keyword, .hljs-built_in, .hljs-type, .hljs-class, .hljs-title, .hljs-function, .hljs-string, .hljs-number, .hljs-literal, .hljs-attr, .hljs-attribute, .hljs-variable, .hljs-selector-tag, .hljs-selector-id, .hljs-selector-class, .hljs-selector-pseudo, .hljs-section, .hljs-name, .hljs-tag, .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-params, .hljs-operator) { color: var(--ink); font-weight: inherit; }
+:is(.markdown-body, #write, body) :is(.hljs-comment, .hljs-quote, .hljs-meta) { color: var(--ink-2); }
+
+/* ================= Typora-specific patches (these .cm-* / .md-fences don't exist in VS Code / web) ================= */
+#write .md-fences :is(.CodeMirror, .CodeMirror-scroll, .CodeMirror-sizer, .CodeMirror-gutters, .CodeMirror-lines) { background: transparent !important; }
+#write .CodeMirror .CodeMirror-cursor { border-left-color: var(--ink) !important; }
+/* CodeMirror renders every line as a <pre>; reset so the global pre padding/margin doesn't indent and space each line individually */
+#write .CodeMirror pre { border: 0 !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
+/* Monochrome: flatten all CodeMirror tokens to grayscale */
+#write .CodeMirror :is(.cm-keyword, .cm-def, .cm-builtin, .cm-string, .cm-string-2, .cm-number, .cm-atom, .cm-variable, .cm-variable-2, .cm-variable-3, .cm-property, .cm-operator, .cm-tag, .cm-attribute, .cm-bracket, .cm-link, .cm-url) { color: var(--ink) !important; }
+#write .CodeMirror :is(.cm-comment, .cm-meta) { color: var(--ink-2) !important; }
+#write .CodeMirror :is(.cm-header, .cm-header-1, .cm-header-2, .cm-header-3, .cm-header-4, .cm-header-5, .cm-header-6) { color: var(--ink) !important; font-weight: normal !important; }
+/* Hide YAML front matter (Typora renders it as a meta block by default) */
+#write pre.md-meta-block { display: none; }
